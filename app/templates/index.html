@@ -1,0 +1,1271 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full bg-[#080c14] text-slate-100">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nokrify &mdash; Pakistan Data Jobs Radar (Zero-Exp &amp; Trainee Focus)</title>
+  <!-- Google Fonts: Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace'],
+          },
+          colors: {
+            surface: {
+              950: '#060910',
+              900: '#0b111e',
+              850: '#101726',
+              800: '#162032',
+              700: '#1e2c45',
+            },
+            accent: {
+              emerald: '#10b981',
+              cyan: '#06b6d4',
+              blue: '#3b82f6',
+              violet: '#8b5cf6',
+              amber: '#f59e0b',
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    /* Premium scrollbar */
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: #080c14; }
+    ::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 4px; }
+    ::-webkit-scrollbar-thumb:hover { background: #334155; }
+    
+    /* Background Glows */
+    .radial-glow-top {
+      background: radial-gradient(circle 600px at 15% -10%, rgba(16, 185, 129, 0.12), transparent 80%);
+    }
+    .radial-glow-bottom {
+      background: radial-gradient(circle 700px at 85% 110%, rgba(59, 130, 246, 0.10), transparent 80%);
+    }
+    
+    /* Card Glass Glow */
+    .job-card {
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .job-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 30px -10px rgba(16, 185, 129, 0.15), 0 0 0 1px rgba(16, 185, 129, 0.3);
+    }
+  </style>
+</head>
+<body class="h-full flex flex-col font-sans antialiased selection:bg-emerald-500 selection:text-white radial-glow-top radial-glow-bottom bg-fixed">
+
+  <!-- TOAST NOTIFICATION CONTAINER -->
+  <div id="toast-container" class="fixed bottom-5 right-5 z-50 flex flex-col gap-2 pointer-events-none"></div>
+
+  <!-- TOP NAVIGATION HEADER -->
+  <header class="border-b border-slate-800/80 bg-[#080c14]/90 backdrop-blur-md sticky top-0 z-40">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+      
+      <!-- Brand & Status Tag -->
+      <div class="flex items-center space-x-3.5">
+        <div class="relative w-10 h-10 rounded-xl bg-gradient-to-tr from-emerald-600 via-teal-500 to-amber-400 p-[1px] shadow-lg shadow-emerald-500/20">
+          <div class="w-full h-full bg-surface-950 rounded-[11px] flex items-center justify-center">
+            <i data-lucide="graduation-cap" class="w-5 h-5 text-emerald-400 animate-pulse"></i>
+          </div>
+        </div>
+        <div>
+          <div class="flex items-center space-x-2">
+            <span class="text-xl font-extrabold tracking-tight bg-gradient-to-r from-emerald-400 via-teal-300 to-amber-300 bg-clip-text text-transparent">
+              Nokrify
+            </span>
+            <span class="flex items-center gap-1.5 px-2.5 py-0.5 text-[10px] font-bold tracking-wider rounded-full bg-emerald-950/80 text-emerald-400 border border-emerald-700/50 shadow-sm shadow-emerald-950">
+              <span class="relative flex h-2 w-2">
+                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+              </span>
+              TRAINEE &amp; ZERO-EXP RADAR
+            </span>
+          </div>
+          <p class="text-[11px] text-slate-400 font-medium">Internships &bull; MTO / Graduate Trainees &bull; Companies Hiring to Train You</p>
+        </div>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="flex items-center space-x-2.5">
+        
+        <!-- Pull Button -->
+        <button id="pull-btn" onclick="triggerPull()" class="group relative inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold bg-gradient-to-r from-emerald-600 to-teal-500 hover:from-emerald-500 hover:to-teal-400 text-white shadow-lg shadow-emerald-600/30 transition-all duration-200 active:scale-95">
+          <i data-lucide="refresh-cw" id="pull-icon" class="w-3.5 h-3.5 transition-transform group-hover:rotate-180"></i>
+          <span id="pull-text">Pull Latest 48h Roles</span>
+          <span id="pull-indicator" class="hidden absolute -top-1 -right-1 flex h-3 w-3">
+            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+            <span class="relative inline-flex rounded-full h-3 w-3 bg-emerald-500"></span>
+          </span>
+        </button>
+
+        <!-- Candidate Profile Button -->
+        <button onclick="openDrawer('profile-drawer')" class="inline-flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-semibold bg-surface-850 hover:bg-surface-800 text-slate-200 border border-slate-700/80 transition shadow-sm">
+          <i data-lucide="file-badge" class="w-3.5 h-3.5 text-emerald-400"></i>
+          <span class="hidden md:inline">My Skills &amp; Resume</span>
+        </button>
+
+        <!-- Sources Manager Button -->
+        <button onclick="openDrawer('sources-drawer')" class="inline-flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-semibold bg-surface-850 hover:bg-surface-800 text-slate-200 border border-slate-700/80 transition shadow-sm" title="Manage Sources">
+          <i data-lucide="globe-2" class="w-3.5 h-3.5 text-cyan-400"></i>
+          <span class="hidden md:inline">Sources</span>
+        </button>
+
+      </div>
+    </div>
+  </header>
+
+  <!-- MAIN DASHBOARD CONTENT -->
+  <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
+
+    <!-- BENTO EXECUTIVE METRICS BAR -->
+    <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+      
+      <!-- Zero-Exp / Trainees & Interns (HIGHLIGHTED HERO CARD) -->
+      <div class="bg-gradient-to-br from-surface-900 via-amber-950/20 to-surface-900 border border-amber-500/40 rounded-2xl p-4 shadow-md backdrop-blur-sm relative overflow-hidden group">
+        <div class="flex items-center justify-between text-xs text-amber-300 font-bold">
+          <span>0-Exp / Trainees</span>
+          <i data-lucide="graduation-cap" class="w-4 h-4 text-amber-400"></i>
+        </div>
+        <div id="stat-trainee" class="text-2xl font-black text-amber-400 mt-1.5 tracking-tight">--</div>
+        <div class="text-[11px] text-amber-400/80 mt-0.5 font-medium">Mentorship &amp; training</div>
+      </div>
+
+      <!-- High Match (>=70%) -->
+      <div class="bg-surface-900/90 border border-emerald-500/30 rounded-2xl p-4 shadow-md backdrop-blur-sm bg-gradient-to-br from-surface-900 to-emerald-950/20 relative overflow-hidden group">
+        <div class="flex items-center justify-between text-xs text-emerald-400 font-semibold">
+          <span>Top Fit (&ge;70%)</span>
+          <i data-lucide="sparkles" class="w-3.5 h-3.5 animate-bounce"></i>
+        </div>
+        <div id="stat-high" class="text-2xl font-black text-emerald-400 mt-1.5 tracking-tight">--</div>
+        <div class="text-[11px] text-emerald-500/70 mt-0.5">High skill alignment</div>
+      </div>
+
+      <!-- Fresh Roles (48h) -->
+      <div class="bg-surface-900/90 border border-slate-800/80 rounded-2xl p-4 shadow-md backdrop-blur-sm relative overflow-hidden group">
+        <div class="flex items-center justify-between text-xs text-slate-400 font-medium">
+          <span>Fresh Roles</span>
+          <span class="px-1.5 py-0.5 rounded text-[10px] font-bold bg-emerald-500/10 text-emerald-400">&le; 48 hrs</span>
+        </div>
+        <div id="stat-fresh" class="text-2xl font-black text-slate-100 mt-1.5 tracking-tight">--</div>
+        <div class="text-[11px] text-slate-500 mt-0.5">Active data vacancies</div>
+      </div>
+
+      <!-- LinkedIn Roles -->
+      <div class="bg-surface-900/90 border border-blue-900/40 rounded-2xl p-4 shadow-md backdrop-blur-sm relative overflow-hidden group">
+        <div class="flex items-center justify-between text-xs text-blue-400 font-medium">
+          <span>LinkedIn Roles</span>
+          <i data-lucide="linkedin" class="w-3.5 h-3.5 text-blue-400"></i>
+        </div>
+        <div id="stat-linkedin" class="text-2xl font-black text-blue-400 mt-1.5 tracking-tight">--</div>
+        <div class="text-[11px] text-slate-500 mt-0.5">Verified working URLs</div>
+      </div>
+
+      <!-- Applied Jobs -->
+      <div class="bg-surface-900/90 border border-slate-800/80 rounded-2xl p-4 shadow-md backdrop-blur-sm relative">
+        <div class="text-xs text-slate-400 font-medium flex items-center justify-between">
+          <span>Applied</span>
+          <i data-lucide="send" class="w-3.5 h-3.5 text-cyan-400"></i>
+        </div>
+        <div id="stat-applied" class="text-2xl font-black text-cyan-400 mt-1.5 tracking-tight">--</div>
+        <div class="text-[11px] text-slate-500 mt-0.5">Applications sent</div>
+      </div>
+
+      <!-- Interviewing -->
+      <div class="bg-surface-900/90 border border-slate-800/80 rounded-2xl p-4 shadow-md backdrop-blur-sm relative">
+        <div class="text-xs text-slate-400 font-medium flex items-center justify-between">
+          <span>Interviewing</span>
+          <i data-lucide="calendar" class="w-3.5 h-3.5 text-amber-400"></i>
+        </div>
+        <div id="stat-interviewing" class="text-2xl font-black text-amber-400 mt-1.5 tracking-tight">--</div>
+        <div class="text-[11px] text-slate-500 mt-0.5">Active conversations</div>
+      </div>
+    </div>
+
+    <!-- CONTROL TOOLBAR: TIME HORIZONS, SEARCH, FILTERS -->
+    <div class="bg-surface-900/95 border border-slate-800/90 rounded-2xl p-4 space-y-4 shadow-xl backdrop-blur-sm">
+      
+      <!-- Top Row: Search + Location + Source + Sort -->
+      <div class="flex flex-col md:flex-row gap-3 items-center justify-between">
+        
+        <!-- Live Search Input -->
+        <div class="relative flex-1 w-full">
+          <i data-lucide="search" class="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500"></i>
+          <input 
+            type="text" 
+            id="search-input" 
+            placeholder="Search roles (e.g. Intern, Trainee, MTO, Power BI), companies (Jazz, Systems Ltd, Daraz), skills (SQL, Azure)..." 
+            class="w-full bg-surface-950 border border-slate-700/80 rounded-xl pl-10 pr-4 py-2.5 text-xs sm:text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/80 focus:border-transparent transition"
+            oninput="debounceSearch()"
+          />
+        </div>
+
+        <!-- Filter Selectors Row -->
+        <div class="flex flex-wrap items-center gap-2 w-full md:w-auto">
+          
+          <!-- City Filter -->
+          <select id="city-filter" onchange="loadJobs()" class="bg-surface-950 border border-slate-700/80 rounded-xl px-3 py-2 text-xs font-medium text-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-500">
+            <option value="ALL">📍 All Pakistan</option>
+            <option value="Karachi">Karachi</option>
+            <option value="Lahore">Lahore</option>
+            <option value="Islamabad">Islamabad / Rawalpindi</option>
+            <option value="Faisalabad">Faisalabad</option>
+            <option value="Peshawar">Peshawar</option>
+            <option value="Remote">🌐 Remote Anywhere</option>
+          </select>
+
+          <!-- Source Filter -->
+          <select id="source-filter" onchange="loadJobs()" class="bg-surface-950 border border-slate-700/80 rounded-xl px-3 py-2 text-xs font-medium text-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-500">
+            <option value="ALL">🌐 All Sources</option>
+            <option value="LinkedIn">LinkedIn Pakistan</option>
+            <option value="Rozee.pk">Rozee.pk</option>
+            <option value="Indeed Pakistan">Indeed Pakistan</option>
+            <option value="Jobz.pk">Jobz.pk</option>
+            <option value="Mustakbil.com">Mustakbil.com</option>
+            <option value="BrightSpyre">BrightSpyre</option>
+            <option value="Bayt.com">Bayt.com</option>
+          </select>
+
+          <!-- Sort Filter -->
+          <select id="sort-filter" onchange="loadJobs()" class="bg-surface-950 border border-slate-700/80 rounded-xl px-3 py-2 text-xs font-medium text-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-500">
+            <option value="score_desc">🎯 Trainee &amp; Best Match First</option>
+            <option value="date_desc">⏱️ Most Recent (Newest)</option>
+            <option value="title_asc">🔤 Title (A-Z)</option>
+          </select>
+
+        </div>
+      </div>
+
+      <!-- Middle Row: ZERO-EXP / TRAINEE FOCUS TOGGLES -->
+      <div class="flex flex-col lg:flex-row gap-3 items-start lg:items-center justify-between pt-2 border-t border-slate-800/80">
+        
+        <!-- Experience Level Chips -->
+        <div class="flex flex-wrap items-center gap-1.5">
+          <span class="text-[11px] font-bold text-amber-400 mr-1 flex items-center gap-1">
+            <i data-lucide="graduation-cap" class="w-3.5 h-3.5"></i> Focus:
+          </span>
+          <button onclick="setExpFilter('ALL')" id="exp-all" class="exp-pill active px-2.5 py-1 text-[11px] font-bold rounded-lg bg-emerald-600 text-white transition">All Roles</button>
+          <button onclick="setExpFilter('INTERNSHIP')" id="exp-intern" class="exp-pill px-2.5 py-1 text-[11px] font-bold rounded-lg bg-surface-950 hover:bg-surface-850 text-amber-300 border border-amber-500/40 transition flex items-center gap-1">
+            <i data-lucide="graduation-cap" class="w-3 h-3"></i> Internships (0 Exp)
+          </button>
+          <button onclick="setExpFilter('TRAINEE')" id="exp-trainee" class="exp-pill px-2.5 py-1 text-[11px] font-bold rounded-lg bg-surface-950 hover:bg-surface-850 text-purple-300 border border-purple-500/40 transition flex items-center gap-1">
+            <i data-lucide="rocket" class="w-3 h-3"></i> Graduate Trainees &amp; MTO
+          </button>
+          <button onclick="setExpFilter('ZERO_ONLY')" id="exp-zero" class="exp-pill px-2.5 py-1 text-[11px] font-bold rounded-lg bg-surface-950 hover:bg-surface-850 text-teal-300 border border-teal-500/40 transition flex items-center gap-1">
+            <i data-lucide="sprout" class="w-3 h-3"></i> All Zero Experience Roles
+          </button>
+        </div>
+
+        <!-- Freshness Horizon Selector -->
+        <div class="flex items-center gap-1.5 p-1 bg-surface-950 border border-slate-800 rounded-xl">
+          <span class="text-[11px] font-semibold text-slate-400 px-2 flex items-center gap-1">
+            <i data-lucide="clock" class="w-3 h-3 text-emerald-400"></i> Age:
+          </span>
+          <button onclick="setAgeFilter(24)" id="age-24" class="age-btn px-2.5 py-1 text-[11px] font-medium rounded-lg text-slate-400 hover:text-slate-200 transition">Last 24h</button>
+          <button onclick="setAgeFilter(48)" id="age-48" class="age-btn active px-2.5 py-1 text-[11px] font-bold rounded-lg bg-emerald-600 text-white shadow-sm transition">Last 48h (Active)</button>
+          <button onclick="setAgeFilter(168)" id="age-168" class="age-btn px-2.5 py-1 text-[11px] font-medium rounded-lg text-slate-400 hover:text-slate-200 transition">Past Week</button>
+          <button onclick="setAgeFilter(0)" id="age-0" class="age-btn px-2.5 py-1 text-[11px] font-medium rounded-lg text-slate-400 hover:text-slate-200 transition">All Time</button>
+        </div>
+
+      </div>
+
+      <!-- Bottom Row: Status Tabs + Min Score Slider -->
+      <div class="flex flex-col sm:flex-row gap-3 items-center justify-between pt-2 border-t border-slate-800/80">
+        <!-- Status Tabs -->
+        <div class="flex flex-wrap items-center gap-1.5" id="status-tabs">
+          <button onclick="setStatusFilter('ALL')" class="status-tab active px-3 py-1 text-xs font-semibold rounded-lg bg-emerald-600 text-white transition">All Status</button>
+          <button onclick="setStatusFilter('NEW')" class="status-tab px-3 py-1 text-xs font-medium rounded-lg bg-surface-950 text-slate-400 hover:bg-surface-800 transition">New</button>
+          <button onclick="setStatusFilter('VIEWED')" class="status-tab px-3 py-1 text-xs font-medium rounded-lg bg-surface-950 text-slate-400 hover:bg-surface-800 transition">Viewed</button>
+          <button onclick="setStatusFilter('APPLIED')" class="status-tab px-3 py-1 text-xs font-medium rounded-lg bg-surface-950 text-slate-400 hover:bg-surface-800 transition">Applied</button>
+          <button onclick="setStatusFilter('INTERVIEWING')" class="status-tab px-3 py-1 text-xs font-medium rounded-lg bg-surface-950 text-slate-400 hover:bg-surface-800 transition">Interviewing</button>
+          <button onclick="setStatusFilter('REJECTED')" class="status-tab px-3 py-1 text-xs font-medium rounded-lg bg-surface-950 text-slate-400 hover:bg-surface-800 transition">Rejected</button>
+        </div>
+
+        <!-- Min Score Slider -->
+        <div class="flex items-center gap-3 w-full sm:w-auto">
+          <span class="text-xs text-slate-400 whitespace-nowrap flex items-center gap-1.5 font-medium">
+            <i data-lucide="sliders-horizontal" class="w-3.5 h-3.5 text-emerald-400"></i>
+            Min Fit: <span id="score-val" class="font-bold text-emerald-400">0%</span>
+          </span>
+          <input 
+            type="range" 
+            id="score-slider" 
+            min="0" 
+            max="95" 
+            step="5" 
+            value="0" 
+            class="w-32 sm:w-44 h-1.5 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-emerald-500" 
+            oninput="updateScoreFilter(this.value)"
+          />
+        </div>
+      </div>
+
+    </div>
+
+    <!-- JOBS FEED CONTAINER -->
+    <div id="jobs-container" class="space-y-3">
+      <!-- Loading Skeleton -->
+      <div class="p-12 text-center text-slate-400 flex flex-col items-center justify-center space-y-3">
+        <div class="relative w-10 h-10">
+          <i data-lucide="loader" class="w-10 h-10 text-emerald-400 animate-spin"></i>
+        </div>
+        <p class="text-sm font-medium text-slate-300">Scanning Pakistani Trainee, Internship &amp; Data roles...</p>
+      </div>
+    </div>
+
+    <!-- FOOTER INFO -->
+    <div class="flex items-center justify-between text-xs text-slate-500 pt-2 pb-8 border-t border-slate-800/80">
+      <div>
+        Showing <span id="showing-count" class="text-slate-300 font-bold">0</span> verified opportunities matching active filters
+      </div>
+      <div class="flex items-center gap-1.5 text-slate-400">
+        <span class="w-2 h-2 rounded-full bg-emerald-500 inline-block"></span>
+        <span>Every URL is verified and live on official boards</span>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- JOB DETAIL MODAL / DRAWER -->
+  <div id="detail-modal" class="fixed inset-0 z-50 hidden overflow-y-auto bg-black/75 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-surface-900 border border-slate-800 w-full max-w-2xl rounded-2xl p-6 space-y-5 shadow-2xl relative">
+      <button onclick="closeModal('detail-modal')" class="absolute top-4 right-4 text-slate-400 hover:text-white p-1 rounded-lg hover:bg-surface-800 transition">
+        <i data-lucide="x" class="w-5 h-5"></i>
+      </button>
+
+      <!-- Modal Header -->
+      <div>
+        <div class="flex flex-wrap items-center gap-2 mb-2">
+          <span id="m-score-badge" class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/30">95% Fit</span>
+          <span id="m-exp-badge" class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-amber-500/10 text-amber-300 border border-amber-500/30">🎓 Paid Internship</span>
+          <span id="m-source-badge" class="px-2 py-0.5 rounded text-[11px] font-semibold bg-blue-500/10 text-blue-400 border border-blue-500/20 flex items-center gap-1">
+            <i data-lucide="linkedin" class="w-3 h-3"></i> LinkedIn
+          </span>
+          <span class="text-slate-600">&bull;</span>
+          <span id="m-date" class="text-xs text-slate-400 font-medium">10 hours ago</span>
+        </div>
+        <h2 id="m-title" class="text-xl font-extrabold text-white leading-snug">Management Trainee Officer - Data Analytics</h2>
+        <div class="flex flex-wrap items-center gap-3 text-sm text-slate-300 mt-1.5">
+          <span id="m-company" class="font-bold text-emerald-400">DataGraders</span>
+          <span>&bull;</span>
+          <span id="m-location" class="flex items-center gap-1 text-slate-300"><i data-lucide="map-pin" class="w-3.5 h-3.5 text-slate-400"></i> Lahore</span>
+          <span>&bull;</span>
+          <span id="m-industry" class="text-slate-400">Analytics &amp; AI</span>
+        </div>
+      </div>
+
+      <!-- Experience & Training Banner -->
+      <div id="m-training-banner" class="p-3.5 rounded-xl bg-gradient-to-r from-amber-950/40 via-surface-950 to-surface-950 border border-amber-500/30 flex items-start gap-3">
+        <div class="p-2 rounded-lg bg-amber-500/10 text-amber-400 shrink-0 mt-0.5">
+          <i data-lucide="graduation-cap" class="w-5 h-5"></i>
+        </div>
+        <div>
+          <div class="text-xs font-bold text-amber-300" id="m-training-headline">Company Hires Fresh Graduates to Teach &amp; Train</div>
+          <div class="text-[11px] text-slate-300 mt-0.5 leading-relaxed" id="m-training-desc">
+            This role is an internship or trainee program that does not require prior professional experience. Structured mentorship is provided on SQL, Power BI, and modern data tools.
+          </div>
+        </div>
+      </div>
+
+      <!-- Match Score Rationale -->
+      <div class="bg-surface-950 border border-slate-800/90 rounded-xl p-4 space-y-3">
+        <h4 class="text-xs font-bold uppercase tracking-wider text-slate-400 flex items-center justify-between">
+          <span class="flex items-center gap-1.5"><i data-lucide="check-circle" class="w-4 h-4 text-emerald-400"></i> Candidate Fit Breakdown</span>
+          <span class="text-[11px] font-normal text-emerald-400">Calibrated for Fresh Graduate</span>
+        </h4>
+        
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-center">
+          <div class="bg-surface-900 p-2.5 rounded-xl border border-slate-800">
+            <div class="text-[10px] text-slate-400 uppercase font-medium">Core Skills</div>
+            <div id="m-score-skill" class="text-sm font-bold text-emerald-400 mt-0.5">--</div>
+          </div>
+          <div class="bg-surface-900 p-2.5 rounded-xl border border-slate-800">
+            <div class="text-[10px] text-slate-400 uppercase font-medium">Role Fit</div>
+            <div id="m-score-title" class="text-sm font-bold text-emerald-400 mt-0.5">--</div>
+          </div>
+          <div class="bg-surface-900 p-2.5 rounded-xl border border-slate-800">
+            <div class="text-[10px] text-slate-400 uppercase font-medium">Trainee / 0-Exp</div>
+            <div id="m-score-exp" class="text-sm font-bold text-amber-400 mt-0.5">--</div>
+          </div>
+          <div class="bg-surface-900 p-2.5 rounded-xl border border-slate-800">
+            <div class="text-[10px] text-slate-400 uppercase font-medium">Degree Match</div>
+            <div id="m-score-edu" class="text-sm font-bold text-emerald-400 mt-0.5">--</div>
+          </div>
+        </div>
+
+        <div>
+          <div class="text-xs text-slate-400 mb-1.5 font-medium">Matched Candidate Skills:</div>
+          <div id="m-matched-skills" class="flex flex-wrap gap-1.5"></div>
+        </div>
+
+        <div id="m-duplicates-wrap" class="hidden pt-2 border-t border-slate-800/80">
+          <div class="text-xs text-amber-400 mb-1 flex items-center gap-1 font-medium">
+            <i data-lucide="copy-check" class="w-3.5 h-3.5"></i> Cross-Board Deduplication:
+          </div>
+          <div id="m-duplicates-list" class="space-y-1 text-xs text-slate-300"></div>
+        </div>
+      </div>
+
+      <!-- Description -->
+      <div>
+        <h4 class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-2">Job Description &amp; Training Details</h4>
+        <div id="m-desc" class="text-xs sm:text-sm text-slate-300 whitespace-pre-line max-h-56 overflow-y-auto p-4 bg-surface-950 rounded-xl border border-slate-800 leading-relaxed font-normal"></div>
+      </div>
+
+      <!-- Actions Footer -->
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-3 border-t border-slate-800">
+        <div class="flex items-center gap-2">
+          <span class="text-xs text-slate-400 font-medium">Status:</span>
+          <select id="m-status-select" onchange="updateJobStatusFromModal()" class="bg-surface-950 border border-slate-700 rounded-lg px-2.5 py-1.5 text-xs text-slate-200 font-semibold">
+            <option value="NEW">New</option>
+            <option value="VIEWED">Viewed</option>
+            <option value="APPLIED">Applied</option>
+            <option value="INTERVIEWING">Interviewing</option>
+            <option value="REJECTED">Rejected</option>
+          </select>
+        </div>
+
+        <div class="flex items-center gap-2">
+          <button onclick="copyModalLink()" class="px-3 py-2 bg-surface-800 hover:bg-surface-700 text-slate-200 text-xs font-semibold rounded-xl border border-slate-700 transition flex items-center gap-1.5">
+            <i data-lucide="copy" class="w-3.5 h-3.5"></i> Copy URL
+          </button>
+          
+          <a id="m-apply-link" href="#" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1.5 px-5 py-2 bg-gradient-to-r from-emerald-600 to-teal-500 hover:from-emerald-500 hover:to-teal-400 text-white rounded-xl text-xs sm:text-sm font-bold shadow-lg shadow-emerald-600/30 transition">
+            <span>Apply on Official Board</span>
+            <i data-lucide="external-link" class="w-4 h-4"></i>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- RESUME & PROFILE DRAWER -->
+  <div id="profile-drawer" class="fixed inset-0 z-50 hidden">
+    <div onclick="closeDrawer('profile-drawer')" class="absolute inset-0 bg-black/60 backdrop-blur-sm"></div>
+    <div class="absolute inset-y-0 right-0 max-w-md w-full bg-surface-900 border-l border-slate-800 p-6 shadow-2xl flex flex-col justify-between overflow-y-auto">
+      <div class="space-y-5">
+        <div class="flex items-center justify-between pb-3 border-b border-slate-800">
+          <div class="flex items-center gap-2">
+            <i data-lucide="user-check" class="w-5 h-5 text-emerald-400"></i>
+            <h3 class="text-base font-bold text-white">Candidate Profile &amp; Skills</h3>
+          </div>
+          <button onclick="closeDrawer('profile-drawer')" class="text-slate-400 hover:text-white p-1 rounded-lg">
+            <i data-lucide="x" class="w-5 h-5"></i>
+          </button>
+        </div>
+
+        <!-- Resume Upload Zone -->
+        <div class="bg-surface-950 border-2 border-dashed border-slate-700/80 hover:border-emerald-500/80 rounded-2xl p-5 text-center cursor-pointer transition relative group" onclick="document.getElementById('resume-file-input').click()">
+          <input type="file" id="resume-file-input" class="hidden" accept=".pdf,.docx,.doc" onchange="handleResumeUpload(event)" />
+          <i data-lucide="upload-cloud" class="w-8 h-8 mx-auto text-emerald-400 mb-2 group-hover:scale-110 transition"></i>
+          <p class="text-xs font-bold text-slate-200">Upload Updated Resume (PDF / DOCX)</p>
+          <p class="text-[11px] text-slate-500 mt-1">Extracts skills, certifications, and re-calibrates 48-hour job scores automatically</p>
+          <div id="upload-status" class="text-xs text-emerald-400 mt-2 font-medium hidden"></div>
+        </div>
+
+        <!-- Degree & Location -->
+        <div class="space-y-3">
+          <div>
+            <label class="block text-xs font-semibold text-slate-400 mb-1">Target Degree</label>
+            <input type="text" id="profile-degree" class="w-full bg-surface-950 border border-slate-700 rounded-xl px-3 py-2 text-xs text-slate-200" />
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-400 mb-1">Location Scope</label>
+            <input type="text" id="profile-location" value="Pakistan (Karachi, Lahore, Islamabad, Remote, etc.)" class="w-full bg-surface-950 border border-slate-700 rounded-xl px-3 py-2 text-xs text-slate-200" />
+          </div>
+        </div>
+
+        <!-- Active Technical Skills -->
+        <div>
+          <div class="flex items-center justify-between mb-1.5">
+            <label class="block text-xs font-semibold text-slate-400">Active Technical Skills</label>
+            <span class="text-[10px] text-emerald-400 font-semibold">40% Match Weight</span>
+          </div>
+          <div id="profile-skills-tags" class="flex flex-wrap gap-1.5 max-h-48 overflow-y-auto p-2.5 bg-surface-950 border border-slate-800 rounded-xl"></div>
+          <div class="flex gap-2 mt-2">
+            <input type="text" id="new-skill-input" placeholder="Add skill (e.g. PySpark, Tableau)..." class="flex-1 bg-surface-950 border border-slate-700 rounded-xl px-3 py-2 text-xs text-slate-200" onkeydown="if(event.key==='Enter'){addCustomSkill();}" />
+            <button onclick="addCustomSkill()" class="px-3.5 py-2 bg-surface-800 hover:bg-surface-700 text-xs font-semibold text-white rounded-xl">Add</button>
+          </div>
+        </div>
+
+        <!-- Certifications -->
+        <div>
+          <label class="block text-xs font-semibold text-slate-400 mb-1">Certifications</label>
+          <div id="profile-certs-tags" class="flex flex-wrap gap-1.5 p-2.5 bg-surface-950 border border-slate-800 rounded-xl"></div>
+        </div>
+      </div>
+
+      <div class="pt-4 border-t border-slate-800">
+        <button onclick="saveProfile()" class="w-full py-2.5 bg-gradient-to-r from-emerald-600 to-teal-500 hover:from-emerald-500 hover:to-teal-400 text-white text-xs font-bold rounded-xl shadow-lg shadow-emerald-600/30 transition">
+          Save Profile &amp; Recalculate Scores
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- SOURCES MANAGER DRAWER -->
+  <div id="sources-drawer" class="fixed inset-0 z-50 hidden">
+    <div onclick="closeDrawer('sources-drawer')" class="absolute inset-0 bg-black/60 backdrop-blur-sm"></div>
+    <div class="absolute inset-y-0 right-0 max-w-md w-full bg-surface-900 border-l border-slate-800 p-6 shadow-2xl flex flex-col justify-between overflow-y-auto">
+      <div class="space-y-5">
+        <div class="flex items-center justify-between pb-3 border-b border-slate-800">
+          <div class="flex items-center gap-2">
+            <i data-lucide="globe-2" class="w-5 h-5 text-cyan-400"></i>
+            <h3 class="text-base font-bold text-white">Monitored Job Sources</h3>
+          </div>
+          <button onclick="closeDrawer('sources-drawer')" class="text-slate-400 hover:text-white p-1 rounded-lg">
+            <i data-lucide="x" class="w-5 h-5"></i>
+          </button>
+        </div>
+
+        <p class="text-xs text-slate-400 leading-relaxed">
+          Nokrify continuously checks LinkedIn, Rozee, and Indeed with polite headers, focusing on internships and trainee roles within the past 48 hours. Toggle sources or add custom RSS feeds below.
+        </p>
+
+        <!-- Sources List -->
+        <div id="sources-list" class="space-y-2.5"></div>
+
+        <!-- Add Custom RSS Feed -->
+        <div class="bg-surface-950 border border-slate-800 rounded-2xl p-4 space-y-3">
+          <h4 class="text-xs font-bold text-slate-200 flex items-center gap-1.5">
+            <i data-lucide="plus-circle" class="w-3.5 h-3.5 text-emerald-400"></i> Add Custom Feed URL
+          </h4>
+          <input type="text" id="custom-src-name" placeholder="Source Name (e.g. RemoteDataJobs)" class="w-full bg-surface-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-slate-200" />
+          <input type="url" id="custom-src-url" placeholder="RSS / Atom Feed URL (https://...)" class="w-full bg-surface-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-slate-200" />
+          <button onclick="addCustomSource()" class="w-full py-2 bg-surface-800 hover:bg-surface-700 text-white text-xs font-semibold rounded-xl transition">
+            Add Custom Source
+          </button>
+        </div>
+      </div>
+
+      <div class="pt-4 border-t border-slate-800">
+        <button onclick="closeDrawer('sources-drawer')" class="w-full py-2.5 bg-surface-800 hover:bg-surface-700 text-slate-200 text-xs font-bold rounded-xl transition">
+          Done
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- APPLICATION REACTIVITY JAVASCRIPT -->
+  <script>
+    let activeStatus = "ALL";
+    let activeMaxAgeHours = 48; // default to past 48 hours
+    let activeExpFilter = "ALL"; // ALL, INTERNSHIP, TRAINEE, ZERO_ONLY
+    let minScore = 0;
+    let searchDebounceTimer = null;
+    let currentJobInModal = null;
+    let userProfile = null;
+
+    document.addEventListener("DOMContentLoaded", () => {
+      lucide.createIcons();
+      loadStats();
+      loadJobs();
+      loadProfile();
+      loadSources();
+      startStatusPolling();
+    });
+
+    // POLLING RADAR STATUS
+    function startStatusPolling() {
+      setInterval(async () => {
+        try {
+          const res = await fetch("/api/scan/status");
+          const data = await res.json();
+          const pullBtn = document.getElementById("pull-btn");
+          const pullText = document.getElementById("pull-text");
+          const pullIcon = document.getElementById("pull-icon");
+          const indicator = document.getElementById("pull-indicator");
+
+          if (data.is_scanning) {
+            pullText.textContent = "Scanning Roles...";
+            pullIcon.classList.add("animate-spin");
+            indicator.classList.remove("hidden");
+          } else {
+            pullText.textContent = "Pull Latest 48h Roles";
+            pullIcon.classList.remove("animate-spin");
+            indicator.classList.add("hidden");
+          }
+        } catch (e) {}
+      }, 4000);
+    }
+
+    async function loadStats() {
+      try {
+        const res = await fetch("/api/stats");
+        const data = await res.json();
+        document.getElementById("stat-trainee").textContent = data.intern_trainee_count || "--";
+        document.getElementById("stat-fresh").textContent = data.fresh_jobs_48h || data.total_jobs;
+        document.getElementById("stat-high").textContent = data.high_matches;
+        document.getElementById("stat-linkedin").textContent = data.linkedin_jobs;
+        document.getElementById("stat-applied").textContent = data.applied_count;
+        document.getElementById("stat-interviewing").textContent = data.interviewing_count;
+      } catch (err) {
+        console.error("Failed to load stats", err);
+      }
+    }
+
+    async function loadJobs() {
+      const search = document.getElementById("search-input").value;
+      const city = document.getElementById("city-filter").value;
+      const source = document.getElementById("source-filter").value;
+      const sortBy = document.getElementById("sort-filter").value;
+
+      const params = new URLSearchParams({
+        search: search || "",
+        min_score: minScore,
+        status: activeStatus,
+        city: city,
+        source: source,
+        max_age_hours: activeMaxAgeHours,
+        sort_by: sortBy,
+        limit: 150
+      });
+
+      if (activeExpFilter === "ZERO_ONLY") {
+        params.append("zero_exp_only", "true");
+      } else if (activeExpFilter !== "ALL") {
+        params.append("experience_type", activeExpFilter);
+      }
+
+      const container = document.getElementById("jobs-container");
+      try {
+        const res = await fetch(`/api/jobs?${params.toString()}`);
+        const jobs = await res.json();
+        renderJobs(jobs);
+        document.getElementById("showing-count").textContent = jobs.length;
+      } catch (err) {
+        container.innerHTML = `
+          <div class="p-8 text-center text-rose-400 bg-rose-950/20 border border-rose-900 rounded-2xl">
+            Failed to load job radar listings. Please retry or click 'Pull Latest'.
+          </div>
+        `;
+      }
+    }
+
+    // COMPANY AVATAR GENERATOR
+    function getCompanyAvatar(name) {
+      const clean = (name || "Tech").replace(/[^a-zA-Z0-9 ]/g, "").trim();
+      const parts = clean.split(" ");
+      let initials = parts[0].slice(0, 2).toUpperCase();
+      if (parts.length > 1) {
+        initials = (parts[0][0] + parts[1][0]).toUpperCase();
+      }
+      
+      const gradients = [
+        "from-emerald-600 to-teal-700",
+        "from-blue-600 to-cyan-700",
+        "from-indigo-600 to-purple-700",
+        "from-amber-600 to-orange-700",
+        "from-purple-600 to-pink-700"
+      ];
+      const idx = (clean.charCodeAt(0) + (clean.charCodeAt(1) || 0)) % gradients.length;
+      return { initials, gradient: gradients[idx] };
+    }
+
+    function formatRelativeDate(isoStr) {
+      if (!isoStr) return "Recent";
+      const d = new Date(isoStr);
+      const diffMs = Date.now() - d.getTime();
+      const diffHrs = Math.floor(diffMs / (1000 * 60 * 60));
+      if (diffHrs < 1) return "Just now";
+      if (diffHrs < 24) return `${diffHrs}h ago`;
+      const diffDays = Math.floor(diffHrs / 24);
+      if (diffDays === 1) return "Yesterday";
+      return `${diffDays} days ago`;
+    }
+
+    function renderJobs(jobs) {
+      const container = document.getElementById("jobs-container");
+      if (!jobs || jobs.length === 0) {
+        container.innerHTML = `
+          <div class="p-12 text-center bg-surface-900/50 border border-slate-800/80 rounded-2xl space-y-3">
+            <div class="w-12 h-12 rounded-2xl bg-surface-850 flex items-center justify-center mx-auto text-slate-500 shadow-inner">
+              <i data-lucide="graduation-cap" class="w-6 h-6"></i>
+            </div>
+            <h3 class="text-base font-bold text-slate-200">No trainee or internship roles match the current filters</h3>
+            <p class="text-xs text-slate-400 max-w-sm mx-auto">Try switching to 'All Roles' or clearing search keywords to see all fresh graduate opportunities.</p>
+            <button onclick="resetFilters()" class="inline-flex items-center gap-1.5 px-4 py-2 bg-surface-800 hover:bg-surface-700 text-xs font-semibold text-slate-200 rounded-xl transition">
+              Reset Filters
+            </button>
+          </div>
+        `;
+        lucide.createIcons();
+        return;
+      }
+
+      container.innerHTML = jobs.map(j => {
+        const { initials, gradient } = getCompanyAvatar(j.company);
+        const relativeDate = formatRelativeDate(j.date_posted);
+
+        // Match Score Badge styling
+        let scorePill = `bg-emerald-500/10 text-emerald-400 border-emerald-500/30`;
+        let scoreDot = `bg-emerald-400`;
+        if (j.match_score < 65) {
+          scorePill = `bg-slate-800 text-slate-400 border-slate-700`;
+          scoreDot = `bg-slate-400`;
+        } else if (j.match_score < 80) {
+          scorePill = `bg-cyan-500/10 text-cyan-400 border-cyan-500/30`;
+          scoreDot = `bg-cyan-400`;
+        }
+
+        // Experience & Trainee Badges
+        let expBadge = "";
+        if (j.experience_level === "INTERNSHIP") {
+          expBadge = `<span class="px-2.5 py-0.5 rounded-full text-[11px] font-extrabold bg-amber-500/15 text-amber-300 border border-amber-500/40 flex items-center gap-1"><i data-lucide="graduation-cap" class="w-3.5 h-3.5"></i> Paid Internship</span>`;
+        } else if (j.experience_level === "TRAINEE") {
+          expBadge = `<span class="px-2.5 py-0.5 rounded-full text-[11px] font-extrabold bg-purple-500/15 text-purple-300 border border-purple-500/40 flex items-center gap-1"><i data-lucide="rocket" class="w-3.5 h-3.5"></i> Graduate Trainee / MTO</span>`;
+        } else if (j.is_zero_experience) {
+          expBadge = `<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-teal-500/10 text-teal-300 border border-teal-500/30 flex items-center gap-1"><i data-lucide="sprout" class="w-3 h-3"></i> 0 Exp Required</span>`;
+        }
+
+        let trainingBadge = "";
+        if (j.training_provided) {
+          trainingBadge = `<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-blue-500/10 text-blue-300 border border-blue-500/20 flex items-center gap-1" title="Company provides structured training"><i data-lucide="book-open" class="w-3 h-3"></i> Training Provided</span>`;
+        }
+
+        // Source badge styling
+        let sourceBadge = `<span class="px-2 py-0.5 rounded text-[10px] font-semibold bg-surface-950 text-slate-400 border border-slate-800">${j.source}</span>`;
+        if (j.source.toLowerCase().includes("linkedin")) {
+          sourceBadge = `<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-blue-500/10 text-blue-400 border border-blue-500/30 flex items-center gap-1"><i data-lucide="linkedin" class="w-3 h-3"></i> LinkedIn</span>`;
+        } else if (j.source.toLowerCase().includes("rozee")) {
+          sourceBadge = `<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/30">Rozee.pk</span>`;
+        } else if (j.source.toLowerCase().includes("indeed")) {
+          sourceBadge = `<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-indigo-500/10 text-indigo-400 border border-indigo-500/30">Indeed PK</span>`;
+        }
+
+        // Freshness pill
+        const isFresh = relativeDate.includes("h ago") || relativeDate.includes("Just") || relativeDate.includes("Yesterday");
+        const freshPill = isFresh ? `
+          <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-950 text-emerald-400 border border-emerald-800/80">
+            <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+            ${relativeDate}
+          </span>
+        ` : `<span class="text-[11px] text-slate-500">${relativeDate}</span>`;
+
+        // Matched skills chips
+        const skillBadges = (j.matched_skills || []).slice(0, 5).map(s => `
+          <span class="px-2 py-0.5 text-[10px] font-semibold rounded-md bg-surface-950 text-emerald-300 border border-slate-800">
+            ${s}
+          </span>
+        `).join("");
+
+        return `
+          <div class="job-card bg-surface-900/90 hover:bg-surface-850 border border-slate-800/90 hover:border-emerald-500/40 rounded-2xl p-4 sm:p-5 transition shadow-sm space-y-3.5 relative group">
+            
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              
+              <!-- Company Avatar & Job Info -->
+              <div class="flex items-start space-x-3.5">
+                
+                <!-- Avatar Icon -->
+                <div class="w-11 h-11 rounded-xl bg-gradient-to-tr ${gradient} flex items-center justify-center font-black text-sm text-white shadow-md shrink-0 ring-1 ring-white/10">
+                  ${initials}
+                </div>
+
+                <div class="space-y-1">
+                  
+                  <div class="flex flex-wrap items-center gap-2">
+                    <!-- Fit Score -->
+                    <span class="px-2.5 py-0.5 rounded-full text-xs font-extrabold border ${scorePill} flex items-center gap-1.5 shadow-sm">
+                      <span class="w-1.5 h-1.5 rounded-full ${scoreDot}"></span>
+                      ${j.match_score}% Fit
+                    </span>
+                    ${expBadge}
+                    ${trainingBadge}
+                    ${sourceBadge}
+                    ${freshPill}
+                  </div>
+
+                  <!-- Role Title -->
+                  <h3 class="text-base font-extrabold text-slate-100 group-hover:text-emerald-300 transition cursor-pointer leading-snug" onclick="openJobDetail(${j.id})">
+                    ${j.title}
+                  </h3>
+
+                  <!-- Company, Location, Industry -->
+                  <div class="flex flex-wrap items-center gap-2 text-xs text-slate-400">
+                    <span class="font-bold text-slate-200">${j.company}</span>
+                    <span>&bull;</span>
+                    <span class="flex items-center gap-1 text-slate-300"><i data-lucide="map-pin" class="w-3 h-3 text-slate-400"></i> ${j.location || j.city}</span>
+                    <span>&bull;</span>
+                    <span class="text-slate-400">${j.industry}</span>
+                  </div>
+
+                </div>
+              </div>
+
+              <!-- Right Action Column -->
+              <div class="flex items-center gap-2 shrink-0 self-end sm:self-center">
+                <!-- Status Dropdown -->
+                <select onchange="updateJobStatus(${j.id}, this.value)" class="bg-surface-950 border border-slate-700/80 rounded-xl px-2.5 py-1.5 text-xs text-slate-200 font-semibold focus:outline-none focus:ring-1 focus:ring-emerald-500">
+                  <option value="NEW" ${j.status === 'NEW' ? 'selected' : ''}>Status: New</option>
+                  <option value="VIEWED" ${j.status === 'VIEWED' ? 'selected' : ''}>Status: Viewed</option>
+                  <option value="APPLIED" ${j.status === 'APPLIED' ? 'selected' : ''}>Status: Applied</option>
+                  <option value="INTERVIEWING" ${j.status === 'INTERVIEWING' ? 'selected' : ''}>Status: Interviewing</option>
+                  <option value="REJECTED" ${j.status === 'REJECTED' ? 'selected' : ''}>Status: Rejected</option>
+                </select>
+
+                <!-- Working Apply Link -->
+                <a href="${j.source_url}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1.5 px-3.5 py-1.5 bg-gradient-to-r from-emerald-600 to-teal-500 hover:from-emerald-500 hover:to-teal-400 text-white text-xs font-bold rounded-xl shadow-md shadow-emerald-600/25 transition active:scale-95">
+                  <span>Apply</span>
+                  <i data-lucide="external-link" class="w-3.5 h-3.5"></i>
+                </a>
+              </div>
+
+            </div>
+
+            <!-- Footer: Matched Skills & Detail Modal Trigger -->
+            <div class="pt-2.5 border-t border-slate-800/80 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+              <div class="flex flex-wrap items-center gap-1.5">
+                <span class="text-[11px] text-slate-400 font-medium mr-1">Skills:</span>
+                ${skillBadges || '<span class="text-[11px] text-slate-400">On-the-job training provided</span>'}
+              </div>
+
+              <div class="flex items-center gap-3 self-end sm:self-auto">
+                <button onclick="copyLink('${j.source_url}')" class="text-[11px] text-slate-400 hover:text-slate-200 transition flex items-center gap-1">
+                  <i data-lucide="copy" class="w-3 h-3"></i> Copy Link
+                </button>
+                <button onclick="openJobDetail(${j.id})" class="text-xs text-slate-300 hover:text-emerald-400 font-semibold transition flex items-center gap-1">
+                  <span>View Details &amp; Training</span>
+                  <i data-lucide="chevron-right" class="w-3.5 h-3.5"></i>
+                </button>
+              </div>
+            </div>
+
+          </div>
+        `;
+      }).join("");
+
+      lucide.createIcons();
+    }
+
+    // PULL ACTION
+    async function triggerPull() {
+      const pullBtn = document.getElementById("pull-btn");
+      const pullText = document.getElementById("pull-text");
+      const pullIcon = document.getElementById("pull-icon");
+      const indicator = document.getElementById("pull-indicator");
+
+      pullText.textContent = "Scanning Roles...";
+      pullIcon.classList.add("animate-spin");
+      indicator.classList.remove("hidden");
+
+      showToast("Scanning for internships, trainees, and 0-experience data roles...", "info");
+
+      try {
+        const res = await fetch("/api/scan/pull", { method: "POST" });
+        const data = await res.json();
+        
+        setTimeout(() => {
+          loadJobs();
+          loadStats();
+          showToast("Radar pull finished! Listings refreshed.", "success");
+        }, 3000);
+      } catch (e) {
+        showToast("Scan initiated in background.", "info");
+      }
+    }
+
+    // EXPERIENCE FOCUS FILTER
+    function setExpFilter(type) {
+      activeExpFilter = type;
+      document.querySelectorAll(".exp-pill").forEach(p => {
+        p.classList.remove("bg-emerald-600", "text-white", "font-bold", "active");
+        p.classList.add("bg-surface-950");
+      });
+      const mapping = {
+        "ALL": "exp-all",
+        "INTERNSHIP": "exp-intern",
+        "TRAINEE": "exp-trainee",
+        "ZERO_ONLY": "exp-zero"
+      };
+      const activeEl = document.getElementById(mapping[type]);
+      if (activeEl) {
+        activeEl.classList.add("bg-emerald-600", "text-white", "font-bold", "active");
+        activeEl.classList.remove("bg-surface-950");
+      }
+      loadJobs();
+    }
+
+    // AGE FILTER (24h / 48h / 7d / All)
+    function setAgeFilter(hours) {
+      activeMaxAgeHours = hours;
+      document.querySelectorAll(".age-btn").forEach(btn => {
+        btn.classList.remove("bg-emerald-600", "text-white", "font-bold", "active");
+        btn.classList.add("text-slate-400");
+      });
+      const activeBtn = document.getElementById(`age-${hours}`);
+      if (activeBtn) {
+        activeBtn.classList.add("bg-emerald-600", "text-white", "font-bold", "active");
+        activeBtn.classList.remove("text-slate-400");
+      }
+      loadJobs();
+    }
+
+    // JOB DETAIL MODAL
+    async function openJobDetail(jobId) {
+      try {
+        const res = await fetch(`/api/jobs/${jobId}`);
+        const job = await res.json();
+        currentJobInModal = job;
+
+        document.getElementById("m-title").textContent = job.title;
+        document.getElementById("m-company").textContent = job.company;
+        document.getElementById("m-location").innerHTML = `<i data-lucide="map-pin" class="w-3.5 h-3.5"></i> ${job.location || job.city}`;
+        document.getElementById("m-industry").textContent = job.industry;
+        document.getElementById("m-score-badge").textContent = `${job.match_score}% Fit`;
+        document.getElementById("m-date").textContent = formatRelativeDate(job.date_posted);
+        document.getElementById("m-desc").textContent = job.description || "No full description provided.";
+        document.getElementById("m-apply-link").href = job.source_url;
+        document.getElementById("m-status-select").value = job.status;
+
+        // Experience Badge
+        const expBadgeEl = document.getElementById("m-exp-badge");
+        if (job.experience_level === "INTERNSHIP") {
+          expBadgeEl.textContent = "🎓 Paid Internship";
+          expBadgeEl.className = "px-2.5 py-0.5 rounded-full text-xs font-bold bg-amber-500/20 text-amber-300 border border-amber-500/40";
+        } else if (job.experience_level === "TRAINEE") {
+          expBadgeEl.textContent = "🚀 Graduate Trainee / MTO";
+          expBadgeEl.className = "px-2.5 py-0.5 rounded-full text-xs font-bold bg-purple-500/20 text-purple-300 border border-purple-500/40";
+        } else {
+          expBadgeEl.textContent = "🌱 Fresh / 0-Exp Required";
+          expBadgeEl.className = "px-2.5 py-0.5 rounded-full text-xs font-bold bg-teal-500/20 text-teal-300 border border-teal-500/40";
+        }
+
+        // Training Banner details
+        const tHeadline = document.getElementById("m-training-headline");
+        const tDesc = document.getElementById("m-training-desc");
+        if (job.experience_level === "INTERNSHIP") {
+          tHeadline.textContent = "Internship Opportunity (No Professional Experience Required)";
+          tDesc.textContent = "This company offers structured training and mentorship to teach you practical data workflows. Ideal for fresh graduates looking for their first career launchpad.";
+        } else if (job.experience_level === "TRAINEE") {
+          tHeadline.textContent = "Graduate Trainee / MTO Program (Company Hires to Train You)";
+          tDesc.textContent = "This program is designed for fresh engineering and computing graduates. The employer provides comprehensive onboarding, mentorship from senior architects, and on-the-job coaching.";
+        } else {
+          tHeadline.textContent = "Entry-Level Position with Mentorship";
+          tDesc.textContent = "Zero or minimal professional experience required. Company is looking for candidate aptitude in SQL, Power BI, and analytical problem-solving.";
+        }
+
+        // Source badge in modal
+        const srcEl = document.getElementById("m-source-badge");
+        if (job.source.toLowerCase().includes("linkedin")) {
+          srcEl.innerHTML = `<i data-lucide="linkedin" class="w-3 h-3 text-blue-400"></i> LinkedIn (Verified URL)`;
+          srcEl.className = "px-2 py-0.5 rounded text-[11px] font-bold bg-blue-500/10 text-blue-400 border border-blue-500/20 flex items-center gap-1";
+        } else {
+          srcEl.innerHTML = job.source;
+          srcEl.className = "px-2 py-0.5 rounded text-[11px] font-semibold bg-surface-950 text-slate-300 border border-slate-800";
+        }
+
+        // Breakdown scores
+        const b = job.match_breakdown || {};
+        document.getElementById("m-score-skill").textContent = `${b.skill_score || 0} / 40 pts`;
+        document.getElementById("m-score-title").textContent = `${b.title_score || 0} / 30 pts`;
+        document.getElementById("m-score-exp").textContent = `+${b.experience_score || 0} pts`;
+        document.getElementById("m-score-edu").textContent = `${b.education_score || 0} / 5 pts`;
+
+        // Matched skills pills
+        const skillsBox = document.getElementById("m-matched-skills");
+        if (job.matched_skills && job.matched_skills.length > 0) {
+          skillsBox.innerHTML = job.matched_skills.map(s => `
+            <span class="px-2.5 py-1 text-xs font-bold rounded-lg bg-emerald-950 text-emerald-300 border border-emerald-800">
+              ${s}
+            </span>
+          `).join("");
+        } else {
+          skillsBox.innerHTML = `<span class="text-xs text-slate-500">Mentorship &amp; training covers technical stack</span>`;
+        }
+
+        // Deduplication details
+        const dupsWrap = document.getElementById("m-duplicates-wrap");
+        const dupsList = document.getElementById("m-duplicates-list");
+        if (job.duplicate_urls && job.duplicate_urls.length > 0) {
+          dupsWrap.classList.remove("hidden");
+          dupsList.innerHTML = job.duplicate_urls.map(u => `
+            <div class="truncate"><a href="${u}" target="_blank" class="text-emerald-400 hover:underline">&bull; ${u}</a></div>
+          `).join("");
+        } else {
+          dupsWrap.classList.add("hidden");
+        }
+
+        if (job.status === "NEW") {
+          updateJobStatus(job.id, "VIEWED", false);
+        }
+
+        document.getElementById("detail-modal").classList.remove("hidden");
+        lucide.createIcons();
+      } catch (err) {
+        showToast("Error loading job details", "error");
+      }
+    }
+
+    async function updateJobStatus(jobId, newStatus, reload = true) {
+      try {
+        await fetch(`/api/jobs/${jobId}/status`, {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ status: newStatus })
+        });
+        showToast(`Status updated to ${newStatus}`, "success");
+        loadStats();
+        if (reload) loadJobs();
+      } catch (e) {
+        showToast("Status update failed", "error");
+      }
+    }
+
+    function updateJobStatusFromModal() {
+      if (!currentJobInModal) return;
+      const sel = document.getElementById("m-status-select").value;
+      updateJobStatus(currentJobInModal.id, sel, true);
+    }
+
+    function copyModalLink() {
+      if (!currentJobInModal) return;
+      copyLink(currentJobInModal.source_url);
+    }
+
+    function copyLink(url) {
+      navigator.clipboard.writeText(url).then(() => {
+        showToast("Copied application link to clipboard!", "success");
+      });
+    }
+
+    // TOAST NOTIFICATIONS
+    function showToast(msg, type = "info") {
+      const container = document.getElementById("toast-container");
+      const toast = document.createElement("div");
+      
+      let border = "border-emerald-500/40 bg-surface-900";
+      let text = "text-emerald-300";
+      if (type === "error") {
+        border = "border-rose-500/40 bg-surface-900";
+        text = "text-rose-300";
+      }
+
+      toast.className = `pointer-events-auto px-4 py-2.5 rounded-xl border ${border} shadow-2xl text-xs font-semibold ${text} flex items-center gap-2 transition-all duration-300 transform translate-y-2 opacity-0`;
+      toast.innerHTML = `<i data-lucide="check" class="w-3.5 h-3.5"></i> <span>${msg}</span>`;
+      container.appendChild(toast);
+      lucide.createIcons();
+
+      setTimeout(() => {
+        toast.classList.remove("translate-y-2", "opacity-0");
+      }, 10);
+
+      setTimeout(() => {
+        toast.classList.add("opacity-0", "translate-y-2");
+        setTimeout(() => toast.remove(), 300);
+      }, 3500);
+    }
+
+    // PROFILE MANAGEMENT
+    async function loadProfile() {
+      try {
+        const res = await fetch("/api/profile");
+        userProfile = await res.json();
+        document.getElementById("profile-degree").value = userProfile.degree || "BSc Computer Systems Engineering";
+        renderProfileTags();
+      } catch (e) {}
+    }
+
+    function renderProfileTags() {
+      if (!userProfile) return;
+      const skillsContainer = document.getElementById("profile-skills-tags");
+      skillsContainer.innerHTML = (userProfile.skills || []).map(s => `
+        <span class="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-semibold rounded-lg bg-surface-850 text-emerald-300 border border-slate-700">
+          ${s}
+          <button onclick="removeSkill('${s}')" class="text-slate-500 hover:text-rose-400 font-bold">&times;</button>
+        </span>
+      `).join("");
+
+      const certsContainer = document.getElementById("profile-certs-tags");
+      certsContainer.innerHTML = (userProfile.certifications || []).map(c => `
+        <span class="px-2.5 py-1 text-xs font-semibold rounded-lg bg-surface-850 text-blue-300 border border-slate-700">
+          ${c}
+        </span>
+      `).join("");
+    }
+
+    function addCustomSkill() {
+      const input = document.getElementById("new-skill-input");
+      const skill = input.value.trim();
+      if (!skill || !userProfile) return;
+      if (!userProfile.skills.includes(skill)) {
+        userProfile.skills.push(skill);
+        renderProfileTags();
+      }
+      input.value = "";
+    }
+
+    function removeSkill(skill) {
+      if (!userProfile) return;
+      userProfile.skills = userProfile.skills.filter(s => s !== skill);
+      renderProfileTags();
+    }
+
+    async function saveProfile() {
+      if (!userProfile) return;
+      userProfile.degree = document.getElementById("profile-degree").value;
+      try {
+        const res = await fetch("/api/profile", {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(userProfile)
+        });
+        userProfile = await res.json();
+        closeDrawer("profile-drawer");
+        showToast("Profile saved! Recalculating scores...", "success");
+        loadJobs();
+        loadStats();
+      } catch (e) {
+        showToast("Failed to save profile", "error");
+      }
+    }
+
+    async function handleResumeUpload(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+
+      const statusEl = document.getElementById("upload-status");
+      statusEl.textContent = `Analyzing ${file.name}...`;
+      statusEl.classList.remove("hidden");
+
+      const formData = new FormData();
+      formData.append("file", file);
+
+      try {
+        const res = await fetch("/api/profile/upload-resume", {
+          method: "POST",
+          body: formData
+        });
+        const data = await res.json();
+        statusEl.textContent = data.message;
+        showToast(`Extracted ${data.extracted_skills.length} skills from resume!`, "success");
+        await loadProfile();
+        loadJobs();
+        loadStats();
+      } catch (err) {
+        statusEl.textContent = "Failed to parse resume.";
+      }
+    }
+
+    // SOURCES MANAGEMENT
+    async function loadSources() {
+      try {
+        const res = await fetch("/api/sources");
+        const sources = await res.json();
+        const list = document.getElementById("sources-list");
+        list.innerHTML = sources.map(s => `
+          <div class="flex items-center justify-between p-3 bg-surface-950 border border-slate-800 rounded-xl">
+            <div>
+              <div class="text-xs font-bold text-slate-200">${s.display_name}</div>
+              <div class="text-[11px] text-slate-500">${s.base_url} &bull; ${s.total_jobs_found} found</div>
+            </div>
+            <label class="relative inline-flex items-center cursor-pointer">
+              <input type="checkbox" ${s.enabled ? 'checked' : ''} onchange="toggleSource(${s.id}, this.checked)" class="sr-only peer">
+              <div class="w-9 h-5 bg-slate-800 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-emerald-600"></div>
+            </label>
+          </div>
+        `).join("");
+      } catch (e) {}
+    }
+
+    async function toggleSource(id, enabled) {
+      await fetch(`/api/sources/${id}/toggle`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ enabled })
+      });
+      showToast("Source status updated", "info");
+      loadStats();
+    }
+
+    async function addCustomSource() {
+      const name = document.getElementById("custom-src-name").value.trim();
+      const url = document.getElementById("custom-src-url").value.trim();
+      if (!name || !url) return alert("Please specify both name and URL");
+
+      await fetch("/api/sources/custom", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: name.toLowerCase().replace(/[^a-z0-9]/g, "_"),
+          display_name: name,
+          base_url: url,
+          source_type: "rss"
+        })
+      });
+
+      document.getElementById("custom-src-name").value = "";
+      document.getElementById("custom-src-url").value = "";
+      loadSources();
+      loadStats();
+      showToast("Custom source added!", "success");
+    }
+
+    // UI FILTERS & CONTROLS
+    function setStatusFilter(status) {
+      activeStatus = status;
+      document.querySelectorAll(".status-tab").forEach(tab => {
+        if (tab.textContent.toUpperCase().includes(status) || (status === "ALL" && tab.textContent.includes("All"))) {
+          tab.classList.add("bg-emerald-600", "text-white", "font-semibold");
+          tab.classList.remove("bg-surface-950", "text-slate-400");
+        } else {
+          tab.classList.remove("bg-emerald-600", "text-white", "font-semibold");
+          tab.classList.add("bg-surface-950", "text-slate-400");
+        }
+      });
+      loadJobs();
+    }
+
+    function updateScoreFilter(val) {
+      minScore = parseInt(val, 10);
+      document.getElementById("score-val").textContent = `${minScore}%`;
+      loadJobs();
+    }
+
+    function debounceSearch() {
+      clearTimeout(searchDebounceTimer);
+      searchDebounceTimer = setTimeout(() => {
+        loadJobs();
+      }, 250);
+    }
+
+    function resetFilters() {
+      document.getElementById("search-input").value = "";
+      document.getElementById("city-filter").value = "ALL";
+      document.getElementById("source-filter").value = "ALL";
+      document.getElementById("sort-filter").value = "score_desc";
+      document.getElementById("score-slider").value = 0;
+      minScore = 0;
+      document.getElementById("score-val").textContent = "0%";
+      setAgeFilter(48);
+      setExpFilter("ALL");
+      setStatusFilter("ALL");
+    }
+
+    function openDrawer(id) {
+      document.getElementById(id).classList.remove("hidden");
+    }
+
+    function closeDrawer(id) {
+      document.getElementById(id).classList.add("hidden");
+    }
+
+    function closeModal(id) {
+      document.getElementById(id).classList.add("hidden");
+    }
+  </script>
+</body>
+</html>
